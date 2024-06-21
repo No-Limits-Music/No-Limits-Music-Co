@@ -21,8 +21,8 @@ model User {
   email                String      @unique @db.VarChar(255)
   password             String      @db.VarChar(255)
   isVerified           Boolean     @default(false)
-  forgotToken          String
-  forgotTokenExpiry    DateTime
-  verifyToken          String      
-  verifyTokenExpiry    DateTime
+  forgotToken          String      @default("")
+  forgotTokenExpiry    DateTime    @default(now())
+  verifyToken          String      @default("")
+  verifyTokenExpiry    DateTime    @default(now())
 }

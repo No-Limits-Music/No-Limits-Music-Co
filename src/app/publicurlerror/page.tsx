@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-const publicUrlError = () => {
+const PublicUrlError = () => {
 
     const router = useRouter();
 
@@ -40,4 +40,4 @@ const publicUrlError = () => {
     )
 }
 
-export default publicUrlError
+export default PublicUrlError
