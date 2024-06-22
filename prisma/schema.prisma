@@ -21,8 +21,17 @@ model User {
   email                String      @unique @db.VarChar(255)
   password             String      @db.VarChar(255)
   isVerified           Boolean     @default(false)
+  isAdmin              Boolean     @default(false)
   forgotToken          String      @default("")
   forgotTokenExpiry    DateTime    @default(now())
   verifyToken          String      @default("")
   verifyTokenExpiry    DateTime    @default(now())
+}
+
+model SuperAdmin {
+  id                   String      @id @default(uuid())
+  username             String      @db.VarChar(255)
+  email                String      @unique @db.VarChar(255)
+  password             String      @db.VarChar(255)
+  adminCreated         String[]    @default([])
 }

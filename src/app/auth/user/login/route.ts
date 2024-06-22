@@ -15,8 +15,7 @@ export async function POST(request: NextRequest) {
                 email: values.email
             }
         });
-        console.log(user);
-        
+
         if (!user) {
             // Check if User does not exist
             return NextResponse.json({ error: "User Does not Exist" }, { status: 401 });
@@ -32,13 +31,24 @@ export async function POST(request: NextRequest) {
                 }
                 // Create Token
                 const token = jwt.sign(tokenData, process.env.JWT_SECRET_KEY!, { expiresIn: "1d" });
-                const response = NextResponse.json({ message: "Login Successful", name: user.username }, { status: 200 });
-                // Set Cookies
-                response.cookies.set("token", token, {
-                    httpOnly: true
-                });
 
-                return response;
+                if (user.isAdmin) {
+                    const response = NextResponse.json({ message: "Login Successful", name: user.username, route: "Admin" }, { status: 200 });
+                    // Set Cookies
+                    response.cookies.set("token", token, {
+                        httpOnly: true
+                    });
+
+                    return response;
+                } else {
+                    const response = NextResponse.json({ message: "Login Successful", name: user.username, route: "User" }, { status: 200 });
+                    // Set Cookies
+                    response.cookies.set("token", token, {
+                        httpOnly: true
+                    });
+
+                    return response;
+                }
             } else {
                 return NextResponse.json({ error: "Invalid Credentials" }, { status: 409 });
             }

@@ -54,7 +54,7 @@ const Login: React.FC = () => {
 
             const data = response.data;
 
-            if (response.status === 200) {
+            if (response.status === 200 && data.route === "User") {
                 toast.success(data.message || "Login successful!", {
                     style: {
                         "backgroundColor": "#D5F5E3",
@@ -64,6 +64,16 @@ const Login: React.FC = () => {
                     duration: 1500
                 });
                 router.push(`/home/${data.name}`);
+            } else if(response.status === 200 && data.route === "Admin") {
+                toast.success(data.message || "Login successful!", {
+                    style: {
+                        "backgroundColor": "#D5F5E3",
+                        "color": "black",
+                        "border": "none"
+                    },
+                    duration: 1500
+                });
+                router.push(`/admin/${data.name}`);
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
