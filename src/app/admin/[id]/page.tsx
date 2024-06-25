@@ -315,7 +315,8 @@ const Admin = ({ params }: { params: { id: String } }) => {
                                                 <ol className="list-decimal pl-4">
                                                     <li>Click the "Upload File" area.</li>
                                                     <li>Select the Excel File you want to upload from your computer.</li>
-                                                    <li className=' text-red-500 font-medium'>Excel File should be a Single File and less than 50Mb in size.</li>
+                                                    <li><span className=' text-red-600 font-medium'>Excel File should be a Single File and less than 50Mb in size.</span></li>
+                                                    <li><span className=' text-red-600 font-medium'>If there are any Blank values in cells then kindly replace it with "(blank)" before upload the File.</span></li>
                                                     <li>Click "Open" or the equivalent button on your file selection dialog.</li>
                                                 </ol>
                                             </AlertDescription>
