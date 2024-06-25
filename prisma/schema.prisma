@@ -37,7 +37,22 @@ model SuperAdmin {
 }
 
 model SpotifyMusic {
-  id              String          @id @default(uuid())
-  
+  id              Int        @id @default(autoincrement())
+  country         String?          
+  label           String?  
+  Main_Label      String?
+  Sub_Label       String?
+  product         String?
+  uri             String?
+  upc             String?
+  ean             String?
+  isrc            String?
+  song_name       String?
+  artist_name     String          
+  composer_name   String?
+  album_name      String?
+  total           String?
+  file_name       String?
+  royality        String?
 }
 

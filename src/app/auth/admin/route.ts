@@ -6,22 +6,24 @@ const db = new PrismaClient();
 
 // Define an interface to describe the structure of each object in the JSON array
 interface ExcelData {
-    country: string;
-    label: string;
-    Main_Label: string;
-    Sub_Label: string;
-    product: string;
-    uri: string;
-    ean: number;
-    isrc: string;
-    song_name: string;
+    country: string | null;
+    label: string | null;
+    Main_Label: string | null;
+    Sub_Label: string | null;
+    product: string | null;
+    uri: string | null;
+    upc: string | null;
+    ean: string | null;
+    isrc: string | null;
+    song_name: string | null;
     artist_name: string;
-    composer_name: string;
-    album_name: string;
-    total: number;
-    file_name: string;
-    royality: number;
+    composer_name: string | null;
+    album_name: string | null;
+    total: string | null;
+    file_name: string | null;
+    royality: string | null;
 }
+
 
 export async function POST(request: NextRequest) {
     try {
@@ -42,26 +44,36 @@ export async function POST(request: NextRequest) {
             const sheetName = workBook.SheetNames[0];
             const workSheet = workBook.Sheets[sheetName];
 
-            // Parse the sheet into JSON array and typecast it
-            const json: ExcelData[] = XLSX.utils.sheet_to_json<ExcelData>(workSheet);
+            if (platform === "Spotify") {
+                // Parse the sheet into JSON array and typecast it
+                const json: ExcelData[] = XLSX.utils.sheet_to_json<ExcelData>(workSheet);
 
-            const firstEntry: ExcelData = json[0];
-
-            // Log properties of the first entry
-            for (const key in firstEntry) {
-                if (Object.prototype.hasOwnProperty.call(firstEntry, key)) {
-                    if (firstEntry[key as keyof ExcelData] === "(blank)") {
-                        console.log(`${key}: ${null}`)
-                    }
-                    console.log(`${key}: ${firstEntry[key as keyof ExcelData]}`);
+                // Append into Database according to the platform selected
+                for (const entry of json) {
+                    await db.spotifyMusic.create({
+                        data: {
+                            country: entry.country === "(blank)" ? null : entry.country,
+                            label: entry.label === "(blank)" ? null : entry.label,
+                            Main_Label: entry.Main_Label === "(blank)" ? null : entry.Main_Label,
+                            Sub_Label: entry.Sub_Label === "(blank)" ? null : entry.Sub_Label,
+                            product: entry.product === "(blank)" ? null : entry.product,
+                            uri: entry.uri === "(blank)" ? null : entry.uri,
+                            upc: entry.upc === "(blank)" ? null : entry.upc?.toString(),
+                            ean: entry.ean === "(blank)" ? null : entry.ean?.toString(),
+                            isrc: entry.isrc === "(blank)" ? null : entry.isrc,
+                            song_name: entry.song_name === "(blank)" ? null : entry.song_name,
+                            artist_name: entry.artist_name,
+                            composer_name: entry.composer_name === "(blank)" ? null : entry.composer_name,
+                            album_name: entry.album_name === "(blank)" ? null : entry.album_name,
+                            total: entry.total === "(blank)" ? null : entry.total?.toString(),
+                            file_name: entry.file_name === "(blank)" ? null : entry.file_name,
+                            royality: entry.royality === "(blank)" ? null : entry.royality?.toString()
+                        }
+                    });
                 }
             }
 
-            console.log(year);
-            console.log(platform);
-            console.log(month);
-
-            return NextResponse.json({ message: "Got Data", data: json }, { status: 200 });
+            return NextResponse.json({ message: "Data imported successfully" }, { status: 200 });
         } else {
             throw new Error("Invalid File Type");
         }
