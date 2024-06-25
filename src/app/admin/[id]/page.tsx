@@ -12,7 +12,7 @@ import {
     SheetContent,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { undefined, z } from 'zod';
+import { z } from 'zod';
 import {
     Form,
     FormControl,
@@ -32,8 +32,9 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { User, Settings, Menu, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import * as XLSX from 'xlsx';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
@@ -75,6 +76,15 @@ const formSchema = z.object({
 const Admin = ({ params }: { params: { id: String } }) => {
 
     const router = useRouter();
+
+    // Preview Excel Data
+    const [ExcelFile, SetFile] = useState<File | null>(null);
+    const [JsonData, SetJsonData] = useState("");
+
+    useEffect(() => {
+        console.log("Excel File", ExcelFile);
+        console.log("Json Format", JsonData);
+    }, [ExcelFile, JsonData]);
 
     // Default form field
     const form = useForm<z.infer<typeof formSchema>>({
@@ -136,10 +146,29 @@ const Admin = ({ params }: { params: { id: String } }) => {
         }
     ];
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        setState(!state);
-        console.log(values);
-    }
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            const response = await axios.post("/auth/admin", values, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            if (response.status === 200) {
+                toast.success(response.data.message || "Data Sent", {
+                    style: {
+                        "backgroundColor": "#D5F5E3",
+                        "color": "black",
+                        "border": "none"
+                    },
+                    duration: 1500
+                });
+                setState(!state);
+                form.reset();
+            }
+        } catch (error: any) {
+            console.error(error)
+        }
+    };
 
     const handlelogout = async () => {
         try {
@@ -161,6 +190,33 @@ const Admin = ({ params }: { params: { id: String } }) => {
         } catch (error: any) {
             console.log(error);
         }
+    };
+
+    const setInput = (e: any) => {
+        if (e.target.files) {
+            SetFile(e.target.files[0]);
+            previewData(e.target.files[0]);
+        } else {
+            SetFile(null);
+        }
+    };
+
+    const previewData = (file: File) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = e.target?.result;
+            if (data) {
+                const workBook = XLSX.read(data, { type: "binary" });
+                const sheetName = workBook.SheetNames[0];
+
+                const workSheet = workBook.Sheets[sheetName];
+
+                const json = XLSX.utils.sheet_to_json(workSheet);
+
+                SetJsonData(JSON.stringify(json, null, 2));
+            }
+        }
+        reader.readAsBinaryString(file);
     }
 
     return (
@@ -252,7 +308,7 @@ const Admin = ({ params }: { params: { id: String } }) => {
                                         <div className="flex flex-col gap-2">
                                             <AlertTitle className=' font-semibold underline'>1. Fields Selection</AlertTitle>
                                             <AlertDescription className=' pl-4'>
-                                                    <p>Select the appropriate values from the dropdown menus for "Month," "Year," and "Platform".</p>                                                
+                                                <p>Select the appropriate values from the dropdown menus for "Month," "Year," and "Platform".</p>
                                             </AlertDescription>
                                             <AlertTitle className=' font-semibold underline'>2. File Upload Process</AlertTitle>
                                             <AlertDescription>
@@ -269,7 +325,7 @@ const Admin = ({ params }: { params: { id: String } }) => {
                             </div>
 
                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6 max-lg:space-y-2'>
+                                <form onSubmit={form.handleSubmit(() => setState(!state))} className='space-y-6 max-lg:space-y-2'>
                                     <div className=' grid grid-cols-3 max-lg:grid-cols-1 gap-3 max-lg:space-y-2 max-lg:p-2 max-lg:gap-0'>
                                         <FormField
                                             control={form.control}
@@ -352,7 +408,7 @@ const Admin = ({ params }: { params: { id: String } }) => {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
-                                                        <Input className=' w-[76.5vw]' accept='.xlsx' placeholder='Excel Upload' type='file' onChange={(e) => field.onChange(e.target.files?.[0])} />
+                                                        <Input className=' w-[76.5vw]' accept='.xlsx, .xls' type='file' onChange={(e) => {field.onChange(e.target.files?.[0]); setInput(e)}} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -361,15 +417,35 @@ const Admin = ({ params }: { params: { id: String } }) => {
                                     </div>
                                     <div className=' flex justify-center items-start py-2'>
                                         <Button variant={'outline'} type='submit' className=' border-blue-600 hover:bg-blue-600 hover:text-white max-lg:bg-blue-600 max-lg:text-white'>
-                                            Submit
+                                            Preview
                                         </Button>
                                     </div>
                                 </form>
                             </Form>
                         </div>
                     ) : (
-                        <div className=' absolute top-0 left-[17vw] h-screen w-[83vw] flex justify-center items-center max-lg:left-0 max-lg:w-screen max-lg:h-[90vh] max-lg:top-[10vh]'>
-                            File Submitted
+                        <div className=' h-screen w-[83vw] absolute top-0 left-[17vw] flex flex-col justify-center items-center gap-4 max-lg:left-0 max-lg:top-[10vh] max-lg:w-screen max-lg:h-[90vh] max-lg:p-2'>
+                            <div className=' w-[60vw] h-[80vh] max-lg:w-[90vw] max-lg:h-[75vh] flex items-center justify-center'>
+                                <Alert variant="default" className=" flex flex-col gap-2 bg-blue-50">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertTitle className=' font-bold'>PREVIEW EXCEL DATA</AlertTitle>
+                                    <AlertDescription className=' flex justify-center items-center'>
+                                        <div className=' h-[70vh] w-[50vw] max-lg:w-[70vw] max-lg:h-[65vh] overflow-y-scroll'>
+                                        <pre className=' bg-gray-100 p-4 rounded w-full max-md:w-fit max-lg:text-[0.5rem]'>
+                                            {JsonData}
+                                        </pre>
+                                        </div>
+                                    </AlertDescription>
+                                </Alert>
+                            </div>
+                            <div className=' flex justify-center items-start py-2 gap-4'>
+                                <Button variant={'outline'} onClick={() => setState(true)} className=' border-blue-600 hover:bg-blue-600 hover:text-white max-lg:bg-blue-600 max-lg:text-white'>
+                                    Back
+                                </Button>
+                                <Button variant={'outline'} onClick={() => form.handleSubmit(onSubmit)()} className=' border-blue-600 hover:bg-blue-600 hover:text-white max-lg:bg-blue-600 max-lg:text-white'>
+                                    Submit
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </section>

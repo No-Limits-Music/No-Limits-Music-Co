@@ -35,3 +35,9 @@ model SuperAdmin {
   password             String      @db.VarChar(255)
   adminCreated         String[]    @default([])
 }
+
+model SpotifyMusic {
+  id              String          @id @default(uuid())
+  
+}
+
