@@ -30,5 +30,7 @@ export const config = {
     "/login",
     "/register",
     "/home/:path*",
+    "/admin/:path*",
+    "/deletedata/:path*"
   ],
 }
