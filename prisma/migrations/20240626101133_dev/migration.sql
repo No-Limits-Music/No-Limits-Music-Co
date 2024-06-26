@@ -10,6 +10,7 @@ CREATE TABLE "User" (
     "forgotTokenExpiry" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "verifyToken" TEXT NOT NULL DEFAULT '',
     "verifyTokenExpiry" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "adminDataCreated" TEXT[] DEFAULT ARRAY[]::TEXT[],
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -27,7 +28,7 @@ CREATE TABLE "SuperAdmin" (
 
 -- CreateTable
 CREATE TABLE "SpotifyMusic" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "country" TEXT,
     "label" TEXT,
     "Main_Label" TEXT,
@@ -44,6 +45,7 @@ CREATE TABLE "SpotifyMusic" (
     "total" TEXT,
     "file_name" TEXT,
     "royality" TEXT,
+    "date" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "SpotifyMusic_pkey" PRIMARY KEY ("id")
 );

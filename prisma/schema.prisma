@@ -16,16 +16,17 @@ datasource db {
 // Creating Modals
 
 model User {
-  id                   String      @id @default(uuid())
-  username             String      @db.VarChar(255)
-  email                String      @unique @db.VarChar(255)
-  password             String      @db.VarChar(255)
-  isVerified           Boolean     @default(false)
-  isAdmin              Boolean     @default(false)
-  forgotToken          String      @default("")
-  forgotTokenExpiry    DateTime    @default(now())
-  verifyToken          String      @default("")
-  verifyTokenExpiry    DateTime    @default(now())
+  id                String   @id @default(uuid())
+  username          String   @db.VarChar(255)
+  email             String   @unique @db.VarChar(255)
+  password          String   @db.VarChar(255)
+  isVerified        Boolean  @default(false)
+  isAdmin           Boolean  @default(false)
+  forgotToken       String   @default("")
+  forgotTokenExpiry DateTime @default(now())
+  verifyToken       String   @default("")
+  verifyTokenExpiry DateTime @default(now())
+  adminDataCreated  String[] @default([])   
 }
 
 model SuperAdmin {
@@ -37,7 +38,7 @@ model SuperAdmin {
 }
 
 model SpotifyMusic {
-  id              Int        @id @default(autoincrement())
+  id              String      @id @default(uuid())
   country         String?          
   label           String?  
   Main_Label      String?
@@ -48,11 +49,12 @@ model SpotifyMusic {
   ean             String?
   isrc            String?
   song_name       String?
-  artist_name     String          
+  artist_name     String      
   composer_name   String?
   album_name      String?
   total           String?
   file_name       String?
   royality        String?
+  date            DateTime
 }
 

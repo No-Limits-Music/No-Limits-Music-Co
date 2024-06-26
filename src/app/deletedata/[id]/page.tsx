@@ -12,7 +12,7 @@ import {
     SheetContent,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { z } from 'zod';
+import { date, z } from 'zod';
 import {
     Form,
     FormControl,
@@ -73,7 +73,7 @@ const formSchema = z.object({
     excelFile: excelSchema
 });
 
-const Admin = ({ params }: { params: { id: String } }) => {
+const DeleteUsers = ({ params }: { params: { id: String } }) => {
 
     const router = useRouter();
 
@@ -133,9 +133,9 @@ const Admin = ({ params }: { params: { id: String } }) => {
             group: "General",
             items: [
                 {
-                    link: `/deletedata/${params.id}`,
+                    link: `/admin/${params.id}`,
                     icon: <User />,
-                    text: "Delete Data"
+                    text: "Add Data"
                 },
                 {
                     link: `/managedata/${params.id}`,
@@ -148,13 +148,14 @@ const Admin = ({ params }: { params: { id: String } }) => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const response = await axios.post("/auth/admin", values, {
+            const response = await axios.delete("/auth/admin", {
                 headers: {
                     'Content-Type': 'multipart/form-data'
-                }
+                },
+                data: values
             });
             if (response.status === 200) {
-                toast.success(response.data.message || "Data Sent", {
+                toast.success(response.data.message || "Data Deleted", {
                     style: {
                         "backgroundColor": "#D5F5E3",
                         "color": "black",
@@ -301,7 +302,7 @@ const Admin = ({ params }: { params: { id: String } }) => {
                     {state ? (
                         <div className=' h-screen w-[83vw] absolute top-0 left-[17vw] flex flex-col justify-start gap-4 p-12 py-2 max-lg:left-0 max-lg:top-[10vh] max-lg:w-screen max-lg:h-[90vh] max-lg:p-2'>
                             <div>
-                                <Alert variant="default" className=" flex flex-col gap-2 bg-blue-50">
+                                <Alert variant="default" className=" flex flex-col gap-2 bg-red-50">
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertTitle className=' font-bold'>GUIDE FOR FILE UPLOAD</AlertTitle>
                                     <AlertDescription>
@@ -455,4 +456,4 @@ const Admin = ({ params }: { params: { id: String } }) => {
     )
 }
 
-export default Admin;
+export default DeleteUsers;
