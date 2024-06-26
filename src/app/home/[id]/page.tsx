@@ -54,7 +54,7 @@ const Home = ({ params }: { params: { id: string } }) => {
 
   const handlelogout = async () => {
     try {
-      await axios.get("auth/logout")
+      await axios.get("/auth/logout")
       .then((res) => {
         toast.success(res.data.message || "Logout Successful!", {
           style: {
