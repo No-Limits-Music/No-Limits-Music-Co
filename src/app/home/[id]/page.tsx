@@ -378,7 +378,7 @@ const Home = ({ params }: { params: { id: string } }) => {
                       </tr>
                       </thead>
                       <tbody>
-                      {userSpotifyData !== undefined ? userSpotifyData.map((item: any) => (
+                      {userSpotifyData !== undefined && userSpotifyData.length !== 0 ? userSpotifyData.map((item: any) => (
                         <>
                         <tr className=' bg-gray-50 border-b border-gray-300' key={item.id}>
                           <td className=' text-center font-medium py-2 px-1'>{item.song_name}</td>
@@ -410,7 +410,7 @@ const Home = ({ params }: { params: { id: string } }) => {
                       </tr>
                       </thead>
                       <tbody>
-                      {userAmazonMusicData !== undefined ? userAmazonMusicData.map((item: any) => (
+                      {userAmazonMusicData !== undefined && userAmazonMusicData.length !== 0 ? userAmazonMusicData.map((item: any) => (
                         <>
                         <tr className=' bg-gray-50 border-b border-gray-300' key={item.id}>
                           <td className=' text-center font-medium py-2 px-1'>{item.song_name}</td>
@@ -442,7 +442,7 @@ const Home = ({ params }: { params: { id: string } }) => {
                       </tr>
                       </thead>
                       <tbody>
-                      {userYoutubeMusicData !== undefined ? userYoutubeMusicData.map((item: any) => (
+                      {userYoutubeMusicData !== undefined && userYoutubeMusicData.length !== 0 ? userYoutubeMusicData.map((item: any) => (
                         <>
                         <tr className=' bg-gray-50 border-b border-gray-300' key={item.id}>
                           <td className=' text-center font-medium py-2 px-1'>{item.song_name}</td>
